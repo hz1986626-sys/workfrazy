@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>职场精神状态扫描报告</title>
     <style>
-        :root { --neon-green: #39ff14; --office-gray: #1e1e1e; --warning-red: #ff3131; }
+        :root { --neon-green: #39ff14; --office-gray: #1e1e1e; --warning-red: #ff313; }
         body { background: #000; color: #fff; font-family: sans-serif; margin: 0; overflow-x: hidden; }
         .container { max-width: 500px; margin: 0 auto; padding: 20px; text-align: center; }
         
@@ -224,14 +224,11 @@ function showResult() {
 function drawShareImage(title, desc, adv) {
     const canvas = document.getElementById('resCanvas');
     const ctx = canvas.getContext('2d');
-    const s = 2; // 放大倍数提升清晰度
+    const s = 2;
     canvas.width = 400 * s;
-    canvas.height = 650 * s; // 保持原有高度
+    canvas.height = 650 * s;
     ctx.scale(s, s);
 
-    // ==========================================
-    // 第一步：绘制复古纸张底色和边框 (最底层)
-    // ==========================================
     ctx.fillStyle = "#f4f1ea";
     ctx.fillRect(0, 0, 400, 650);
     
@@ -239,12 +236,6 @@ function drawShareImage(title, desc, adv) {
     ctx.lineWidth = 1;
     ctx.strokeRect(10, 10, 380, 630);
 
-
-    // ==========================================
-    // 第二步：绘制原本的诊断报告内容 (中间层)
-    // ==========================================
-    
-    // 报告头
     ctx.fillStyle = "#333";
     ctx.font = "bold 22px Arial";
     ctx.textAlign = "center";
@@ -252,19 +243,16 @@ function drawShareImage(title, desc, adv) {
     ctx.font = "bold 12px SimSun";
     ctx.fillText("NO. " + Math.random().toString().slice(2, 10), 200, 85);
 
-    // 诊断结果 (头衔)
     ctx.fillStyle = "#d32f2f"; 
     ctx.font = "bold 32px sans-serif";
     ctx.fillText(title, 200, 160);
 
-    // 临床表现
     ctx.fillStyle = "#555";
     ctx.font = "bold 16px sans-serif";
     ctx.fillText("【临床表现】", 200, 210);
     ctx.font = "14px sans-serif";
     ctx.fillText(desc, 200, 240);
 
-    // 医生建议
     ctx.textAlign = "left";
     ctx.fillStyle = "#333";
     ctx.font = "bold 14px sans-serif";
@@ -274,30 +262,24 @@ function drawShareImage(title, desc, adv) {
     ctx.fillText(adv[1], 40, 375);
     ctx.fillText(adv[2], 40, 400);
 
-       // ========== 真正的标准公章（代码直改版） ==========
     ctx.save();
-    ctx.translate(320, 480); // 印章中心点
+    ctx.translate(320, 480);
 
-    // 1. 画红圈
     ctx.beginPath();
     ctx.strokeStyle = "rgba(211,47,47,0.8)";
     ctx.lineWidth = 3;
     ctx.arc(0, 0, 45, 0, Math.PI * 2);
     ctx.stroke();
 
-    // 2. 中间大字
     ctx.fillStyle = "rgba(211,47,47,0.9)";
     ctx.font = "bold 16px sans-serif";
     ctx.textAlign = "center";
     ctx.fillText("同意", 0, 5);
 
-    // 3. 核心：文字环绕（修复变量错误 + 优化间距）
     const sealText = "灵犀测评局加班专用章";
     const chars = sealText.split("");
-    const radius = 33;     // 调整：离圆心近一点，离红圈远一点
-    const arcRange = Math.PI * 1.1; // 调整：控制字间距（数值越小间距越小）
-    
-    // 计算起始角度（正上方往左偏半个弧度）
+    const radius = 33;
+    const arcRange = Math.PI * 1.1;
     const startAngle = -Math.PI / 2 - (arcRange / 2);
     const step = arcRange / (chars.length - 1);
 
@@ -308,54 +290,41 @@ function drawShareImage(title, desc, adv) {
     chars.forEach((char, i) => {
         const angle = startAngle + (i * step);
         ctx.save();
-        ctx.rotate(angle + Math.PI / 2); // 旋转坐标系
-        ctx.translate(0, -radius);       // 移动到位置
+        ctx.rotate(angle);
+        ctx.translate(0, -radius);
+        ctx.rotate(Math.PI / 2);
         ctx.textAlign = "center";
         ctx.fillText(char, 0, 0);
         ctx.restore();
     });
     ctx.restore();
 
-
-    // ==========================================
-    // 第三步：绘制底部的裂变文案 (最上层)
-    // ==========================================
-    
-    // 绘制一个淡淡的分割线，让底部看起来更像一个功能区
     ctx.beginPath();
     ctx.strokeStyle = "rgba(139, 126, 102, 0.3)";
     ctx.moveTo(30, 540);
     ctx.lineTo(370, 540);
     ctx.stroke();
 
-    // 回复引导文字
     ctx.textAlign = "center";
-    ctx.fillStyle = "#666"; // 次要文字用灰色
+    ctx.fillStyle = "#666";
     ctx.font = "13px sans-serif";
     ctx.textAlign = "center";
-    ctx.fillStyle = "#333"; // 使用深灰色，看起来像正文
-    ctx.font = "bold 16px sans-serif"; // 加粗，字号适中
-    ctx.fillText("发给你的朋友，看看他是什么货色 😏", 200, 540); // y坐标设为540，在分割线上方
+    ctx.fillStyle = "#333";
+    ctx.font = "bold 16px sans-serif";
+    ctx.fillText("发给你的朋友，看看他是什么货色 😏", 200, 540);
 
-    // 核心关键词：加粗、变红、放大
     ctx.fillStyle = "#d32f2f"; 
     ctx.font = "bold 18px sans-serif";
     ctx.fillText("扫码回复 [不干了] 开启诊断", 200, 595);
 
-    // 最后的版权声明
     ctx.fillStyle = "#999";
     ctx.font = "10px Arial";
     ctx.fillText("©灵犀测评局", 200, 625);
 
-
-    // ==========================================
-    // 第四步：输出图片
-    // ==========================================
-    setTimeout(() => {
-        document.getElementById('share-img').src = canvas.toDataURL("image/png");
-        // 如果需要，可以在这里把loading文字隐藏掉
-        // document.getElementById('loading-text').style.display = 'none';
-    }, 300);
+    // ========== GitHub 专用修复：仅此处改动 ==========
+    const imgEl = document.getElementById('share-img');
+    imgEl.src = '';
+    imgEl.src = canvas.toDataURL('image/png');
 }
 </script>
 </body>
