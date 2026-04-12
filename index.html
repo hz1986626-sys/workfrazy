@@ -308,8 +308,7 @@ function drawShareImage(title, desc, adv) {
     chars.forEach((char, i) => {
         const angle = startAngle + (i * step);
         ctx.save();
-        ctx.rotate(angle);
-        ctx.rotate(Math.PI / 2);
+        ctx.rotate(angle + Math.PI / 2); // 旋转坐标系
         ctx.translate(0, -radius);       // 移动到位置
         ctx.textAlign = "center";
         ctx.fillText(char, 0, 0);
@@ -352,10 +351,11 @@ function drawShareImage(title, desc, adv) {
     // ==========================================
     // 第四步：输出图片
     // ==========================================
-    
+    setTimeout(() => {
         document.getElementById('share-img').src = canvas.toDataURL("image/png");
         // 如果需要，可以在这里把loading文字隐藏掉
         // document.getElementById('loading-text').style.display = 'none';
+    }, 300);
 }
 </script>
 </body>
