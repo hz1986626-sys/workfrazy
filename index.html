@@ -8,63 +8,22 @@
         :root { --neon-green: #39ff14; --office-gray: #1e1e1e; --warning-red: #ff3131; }
         body { background: #000; color: #fff; font-family: sans-serif; margin: 0; overflow-x: hidden; }
         .container { max-width: 500px; margin: 0 auto; padding: 20px; text-align: center; }
-        
-        /* 核心修复：增加缺失的隐藏类 */
         .hidden { display: none !important; }
-
-        .q-card { 
-            background: rgba(30, 30, 30, 0.8); 
-            backdrop-filter: blur(10px); 
-            border: 1px solid var(--neon-green); 
-            padding: 25px; 
-            border-radius: 20px; 
-            margin-top: 30px;
-            box-shadow: 0 0 20px rgba(57, 255, 20, 0.2);
-            position: relative;
-        }
-
-        .progress-container {
-            width: 100%; height: 6px; background: #333;
-            border-radius: 3px; margin-bottom: 20px; overflow: hidden;
-        }
-
-        .progress-bar {
-            height: 100%; background: var(--neon-green); width: 0%;
-            box-shadow: 0 0 10px var(--neon-green); transition: width 0.3s ease;
-        }
-
-        .opt-btn { 
-            display: block; width: 100%; padding: 15px; margin: 12px 0; 
-            background: rgba(255, 255, 255, 0.05); 
-            color: #eee; border: 1px solid rgba(57, 255, 20, 0.3); 
-            border-radius: 12px; text-align: left; font-size: 15px; 
-            transition: all 0.2s; cursor: pointer;
-        }
-
+        .q-card { background: rgba(30, 30, 30, 0.8); backdrop-filter: blur(10px); border: 1px solid var(--neon-green); padding: 25px; border-radius: 20px; margin-top: 30px; box-shadow: 0 0 20px rgba(57, 255, 20, 0.2); position: relative; }
+        .progress-container { width: 100%; height: 6px; background: #333; border-radius: 3px; margin-bottom: 20px; overflow: hidden; }
+        .progress-bar { height: 100%; background: var(--neon-green); width: 0%; box-shadow: 0 0 10px var(--neon-green); transition: width 0.3s ease; }
+        .opt-btn { display: block; width: 100%; padding: 15px; margin: 12px 0; background: rgba(255, 255, 255, 0.05); color: #eee; border: 1px solid rgba(57, 255, 20, 0.3); border-radius: 12px; text-align: left; font-size: 15px; transition: all 0.2s; cursor: pointer; }
         .opt-btn:active { background: var(--neon-green); color: #000; transform: scale(0.98); }
-        
-        /* 首页动画 */
         .title { font-size:28px; color:var(--neon-green); margin-top:20vh; text-shadow:0 0 10px var(--neon-green); }
         .subtitle { color:#aaa; margin-top:10px; font-size:14px; }
         .scan-line { width:80%; height:2px; background:var(--neon-green); margin:20px auto; animation:scan 2s infinite linear; }
         @keyframes scan { 0% {transform:translateX(-50px); opacity:0;} 50% {opacity:1;} 100% {transform:translateX(50px); opacity:0;} }
-        
-        .start-btn { 
-            width:100%; padding:15px; background:var(--neon-green); color:#000; 
-            border:none; border-radius:10px; font-size:16px; font-weight:bold; 
-            box-shadow:0 0 15px var(--neon-green); cursor: pointer;
-        }
-
-        .bg-neon {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: radial-gradient(circle at 20% 20%, rgba(57,255,20,0.15) 0%, transparent 40%),
-                        radial-gradient(circle at 80% 70%, rgba(255,49,49,0.1) 0%, transparent 40%);
-            animation: breathe 8s infinite alternate ease-in-out; z-index: -1;
-        }
+        .start-btn { width:100%; padding:15px; background:var(--neon-green); color:#000; border:none; border-radius:10px; font-size:16px; font-weight:bold; box-shadow:0 0 15px var(--neon-green); cursor: pointer; }
+        .bg-neon { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at 20% 20%, rgba(57,255,20,0.15) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(255,49,49,0.1) 0%, transparent 40%); animation: breathe 8s infinite alternate ease-in-out; z-index: -1; }
         @keyframes breathe { 0% { opacity: 0.3; } 100% { opacity: 0.8; } }
-
         .floating-word { position: absolute; color: rgba(57,255,20,0.1); font-size: 12px; animation: float 6s infinite linear; z-index: -1; }
         @keyframes float { 0% { transform: translateY(10px); opacity: 0.2; } 100% { transform: translateY(-10px); opacity: 0.2; } }
+        #share-img { width: 100%; border-radius: 10px; box-shadow: 0 0 20px rgba(255,255,255,0.1); margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -99,15 +58,14 @@
     </div>
 
     <div id="page-result" class="hidden">
-        <p class="result-tip">长按图片保存 👆</p>
         <p style="font-size:16px; color:#fff; margin-top:15px;">
-        回复 <span style="color:#39ff14; font-weight:bold; font-size:20px;">【不干了】</span><br>
-        开启你的 2026 职场诊断
+            回复 <span style="color:#39ff14; font-weight:bold; font-size:20px;">【不干了】</span><br>
+            开启你的 2026 职场诊断
         </p>
-        <h2 style="color:var(--neon-green)">诊断报告生成中...</h2>
+        <h2 id="loading-text" style="color:var(--neon-green)">报告生成中...</h2>
         <canvas id="resCanvas" style="display:none;"></canvas>
-        <img id="share-img" style="width:100%; border-radius:10px;">
-        <p style="font-size:12px; color:#888; margin-top:10px;">长按图片保存，回复【不干了】开启你的诊断</p>
+        <img id="share-img">
+        <p style="font-size:12px; color:#888; margin-top:10px;">长按图片保存 👆</p>
     </div>
 </div>
 
@@ -140,6 +98,7 @@ const questions = [
 ];
 
 const bgm = document.getElementById('bgm');
+const musicBtn = document.getElementById('musicBtn');
 let musicOn = false;
 
 function toggleMusic() {
@@ -186,109 +145,145 @@ function goPrev() {
     renderNext();
 }
 
-function showResult() {
+const map = {
+    WW:{title:"纯种究极社畜",desc:"血液里流淌KPI，灵魂焊死在工位。",advice:["强制下班断电，杜绝自我感动式加班。","减少精神内耗，公司没你并不会倒闭。","每月摸鱼一次，激活快要枯死的灵魂。"]},
+    WM:{title:"精致利己打工仔",desc:"表面努力干活，实则精准摸鱼。",advice:["继续保持摸鱼技巧，别被老板抓现行。","适当降低表演欲，活得更轻松一点。","工资到位再干活，别当免费劳模。"]},
+    WF:{title:"自爆型加班怪",desc:"一边疯狂加班，一边疯狂骂街。",advice:["加班可以，减压第一。","骂街请私下进行，保住饭碗更重要。","每周放空一天，彻底切断工作信号。"]},
+    WS:{title:"工位千年兵马俑",desc:"情绪极度稳定，只要不开除能坐到老。",advice:["适当活动筋骨，别真长成工位摆件。","偶尔表达需求，别一直当软柿子。","给自己找点乐子，人生不止上班。"]},
+    MW:{title:"带薪摸鱼大师",desc:"在老板眼皮底下偷时间，已入化境。",advice:["低调发展，不要教坏同事连累自己。","关键节点露个脸，避免被优化。","摸鱼同时提升自己，为跑路做准备。"]},
+    MM:{title:"摆烂界天花板",desc:"工资照领活儿不干，公司兴衰与我无瓜。",advice:["保持底线，别太明显被抓典型。","摆烂但别颓废，业余搞点小快乐。","存钱要紧，万一失业也能躺更久。"]},
+    MF:{title:"阴阳怪气摸鱼王",desc:"不干活还嘲讽别人，嘴比工作积极。",advice:["收敛锋芒，别被同事集体孤立。","吐槽适度，小心被录音背刺。","实在不爽就换环境，别一直内耗。"]},
+    MS:{title:"工位入定老僧",desc:"外界鸡飞狗跳，我自岿然不动。",advice:["继续保持心态，你已经赢了大多数人。","偶尔参与社交，避免彻底透明化。","守住边界，不被额外工作绑架。"]},
+    FW:{title:"疯批卷王",desc:"又卷又疯，谁拦我干活我跟谁急。",advice:["卷可以，但别卷到没朋友。","发疯要分场合，别当众顶飞领导。","学会休息，否则容易突然崩盘。"]},
+    FM:{title:"赛博职场刺客",desc:"平时隐身摸鱼，出手专治不服。",advice:["藏好身份，做幕后高人更安全。","别轻易出手，枪打出头鸟。","关键时刻再亮招，平时低调划水。"]},
+    FF:{title:"顶级疯批巨星",desc:"公司是舞台，发疯是日常，随心所欲。",advice:["发疯适度，别把自己作离职。","树立疯批人设，减少无效麻烦。","快乐最重要，但社保也不能断。"]},
+    FS:{title:"笑面疯批",desc:"表面温和淡定，内心疯狂吐槽。",advice:["内心戏别太足，容易累坏自己。","适当表达真实想法，别总憋着。","保持微笑，但该硬气时别软。"]},
+    SW:{title:"全自动职场NPC",desc:"稳定又努力，因为太正常格格不入。",advice:["不用刻意合群，正常就是最大优势。","学会拒绝，别当万能工具人。","保持清醒，别被职场PUA洗脑。"]},
+    SM:{title:"提前退休心态",desc:"年纪轻轻看破红尘，上班只为混口饭。",advice:["继续低欲望生活，减少焦虑。","悄悄搞副业，为真正退休铺路。","别完全躺平，留条后路更稳。"]},
+    SF:{title:"温柔疯批判官",desc:"不吵不闹，但每句都扎心。",advice:["保持温柔，但要有锋芒。","看破不说破，给自己留余地。","别过度评判他人，管好自己就行。"]},
+    SS:{title:"人间清醒佛陀",desc:"慈悲看戏，从不生气，职场活神仙。",advice:["继续修行，你已经基本成佛。","偶尔入世，别完全脱离人群。","守护好心情，比什么都珍贵。"]}
+};
+
+// 辅助函数：图片加载
+function loadImage(src) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = "Anonymous"; 
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null); 
+        img.src = src;
+    });
+}
+
+async function showResult() {
     document.getElementById('resultAudio').play().catch(()=>{});
     document.getElementById('page-quiz').classList.add('hidden');
     document.getElementById('page-result').classList.remove('hidden');
+
     const sorted = Object.keys(scores).sort((a,b)=>scores[b]-scores[a]);
     const key = sorted[0] + sorted[1];
-    const map = {
-        WW:{title:"纯种究极社畜",desc:"血液里流淌KPI，灵魂焊死在工位，公司没你真会停转。",advice:["强制下班断电，杜绝自我感动式加班。","减少精神内耗，老板没你并不会倒闭。","每月摸鱼一次，激活快要枯死的灵魂。"]},
-        WM:{title:"精致利己打工仔",desc:"表面努力干活，实则精准摸鱼，主打性价比最高。",advice:["继续保持摸鱼技巧，别被老板抓现行。","适当降低表演欲，活得更轻松一点。","工资到位再干活，别当免费劳模。"]},
-        WF:{title:"自爆型加班怪",desc:"一边疯狂加班，一边疯狂骂街，精神反复横跳。",advice:["加班可以，减压第一。","骂街请私下进行，保住饭碗更重要。","每周放空一天，彻底切断工作信号。"]},
-        WS:{title:"工位千年兵马俑",desc:"情绪极度稳定，只要不开除，能坐到地老天荒。",advice:["适当活动筋骨，别真长成工位摆件。","偶尔表达需求，别一直当软柿子。","给自己找点乐子，人生不止上班。"]},
-        MW:{title:"带薪摸鱼大师",desc:"在老板眼皮底下偷时间，摸鱼已入化境。",advice:["低调发展，不要教坏同事连累自己。","关键节点露个脸，避免被优化。","摸鱼同时提升自己，为跑路做准备。"]},
-        MM:{title:"摆烂界天花板",desc:"工资照领活儿不干，公司兴衰与我无瓜。",advice:["保持底线，别太明显被抓典型。","摆烂但别颓废，业余搞点小快乐。","存钱要紧，万一失业也能躺更久。"]},
-        MF:{title:"阴阳怪气摸鱼王",desc:"不干活还嘲讽别人，嘴比工作积极多了。",advice:["收敛锋芒，别被同事集体孤立。","吐槽适度，小心被录音背刺。","实在不爽就换环境，别一直内耗。"]},
-        MS:{title:"工位入定老僧",desc:"外界鸡飞狗跳，我自岿然不动，心如止水。",advice:["继续保持心态，你已经赢了大多数人。","偶尔参与社交，避免彻底透明化。","守住边界，不被额外工作绑架。"]},
-        FW:{title:"疯批卷王",desc:"又卷又疯，谁拦我干活我跟谁急。",advice:["卷可以，但别卷到没朋友。","发疯要分场合，别当众顶飞领导。","学会休息，否则容易突然崩盘。"]},
-        FM:{title:"赛博职场刺客",desc:"平时隐身摸鱼，一出手专治各种不服。",advice:["藏好身份，做幕后高人更安全。","别轻易出手，枪打出头鸟。","关键时刻再亮招，平时低调划水。"]},
-        FF:{title:"顶级疯批巨星",desc:"公司是舞台，发疯是日常，随心所欲。",advice:["发疯适度，别把自己作离职。","树立疯批人设，减少无效麻烦。","快乐最重要，但社保也不能断。"]},
-        FS:{title:"笑面疯批",desc:"表面温和淡定，内心疯狂吐槽。",advice:["内心戏别太足，容易累坏自己。","适当表达真实想法，别总憋着。","保持微笑，但该硬气时别软。"]},
-        SW:{title:"全自动职场NPC",desc:"稳定又努力，因为太正常反而格格不入。",advice:["不用刻意合群，正常就是最大优势。","学会拒绝，别当万能工具人。","保持清醒，别被职场PUA洗脑。"]},
-        SM:{title:"提前退休心态",desc:"年纪轻轻看破红尘，上班只为混口饭。",advice:["继续低欲望生活，减少焦虑。","悄悄搞副业，为真正退休铺路。","别完全躺平，留条后路更稳。"]},
-        SF:{title:"温柔疯批判官",desc:"不吵不闹，但每句都扎心。",advice:["保持温柔，但要有锋芒。","看破不说破，给自己留余地。","别过度评判他人，管好自己就行。"]},
-        SS:{title:"人间清醒佛陀",desc:"慈悲看戏，从不生气，职场活神仙。",advice:["继续修行，你已经基本成佛。","偶尔入世，别完全脱离人群。","守护好心情，比什么都珍贵。"]}
-    };
     const res = map[key] || map.SW;
-    drawShareImage(res.title, res.desc, res.advice);
+
+    await generateFinalImage(res.title, res.desc, res.advice);
+    document.getElementById('loading-text').innerText = "诊断完成！";
 }
 
-function drawShareImage(title, desc, adv) {
+async function generateFinalImage(title, desc, adv) {
     const canvas = document.getElementById('resCanvas');
     const ctx = canvas.getContext('2d');
     const s = 2; 
     canvas.width = 400 * s;
-    canvas.height = 650 * s; 
+    canvas.height = 700 * s; 
     ctx.scale(s, s);
 
-    // 背景
+    // 1. 背景
     ctx.fillStyle = "#f4f1ea";
-    ctx.fillRect(0, 0, 400, 650);
+    ctx.fillRect(0, 0, 400, 700);
     ctx.strokeStyle = "#8b7e66";
     ctx.lineWidth = 1;
-    ctx.strokeRect(10, 10, 380, 630);
+    ctx.strokeRect(10, 10, 380, 680);
 
-    // 文字
+    // 2. 头部
     ctx.fillStyle = "#333";
-    ctx.font = "bold 22px Arial";
     ctx.textAlign = "center";
+    ctx.font = "bold 20px Arial";
     ctx.fillText("2026 职场精神状态扫描报告", 200, 60);
-    ctx.font = "bold 12px SimSun";
+    ctx.font = "12px Arial";
     ctx.fillText("NO. " + Math.random().toString().slice(2, 10), 200, 85);
 
+    // 3. 结果标题
     ctx.fillStyle = "#d32f2f"; 
     ctx.font = "bold 32px sans-serif";
     ctx.fillText(title, 200, 160);
 
+    // 4. 临床表现
     ctx.fillStyle = "#555";
-    ctx.font = "bold 16px sans-serif";
-    ctx.fillText("【临床表现】", 200, 210);
-    
+    ctx.font = "bold 15px sans-serif";
+    ctx.fillText("【 临床表现 】", 200, 210);
     ctx.font = "14px sans-serif";
     ctx.fillText(desc, 200, 240);
 
+    // 5. 医生建议
     ctx.textAlign = "left";
     ctx.fillStyle = "#333";
-    ctx.font = "bold 14px sans-serif";
-    ctx.fillText("【医生建议】", 40, 320);
+    ctx.font = "bold 15px sans-serif";
+    ctx.fillText("【 医生建议 】", 40, 310);
     ctx.font = "13px sans-serif";
-    ctx.fillText("· " + adv[0], 40, 350);
-    ctx.fillText("· " + adv[1], 40, 375);
-    ctx.fillText("· " + adv[2], 40, 400);
+    adv.forEach((text, i) => {
+        ctx.fillText("· " + text, 40, 345 + (i * 28));
+    });
 
-    // 直接绘制，不搞异步！最稳定！
-    finishDrawing(ctx, canvas);
-}
+    // 6. 加载并绘制素材
+    const [qrImg, sealImg] = await Promise.all([
+        loadImage('qrcode.jpg'),
+        loadImage('lx.jpg')
+    ]);
 
-function finishDrawing(ctx, canvas) {
-    // 底部线
+    // 绘制二维码
+    if (qrImg) {
+        ctx.drawImage(qrImg, 150, 460, 100, 100);
+    } else {
+        ctx.strokeStyle = "#ccc";
+        ctx.strokeRect(150, 460, 100, 100);
+        ctx.fillStyle = "#999";
+        ctx.font = "10px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("此处为二维码", 200, 515);
+    }
+
+    // 绘制印章 (如果不成功则绘制模拟红印)
+    if (sealImg) {
+        ctx.drawImage(sealImg, 270, 460, 90, 90);
+    } else {
+        ctx.save();
+        ctx.translate(315, 505);
+        ctx.rotate(-0.2);
+        ctx.strokeStyle = "rgba(211,47,47,0.7)";
+        ctx.lineWidth = 3;
+        ctx.strokeRect(-35, -35, 70, 70);
+        ctx.fillStyle = "rgba(211,47,47,0.7)";
+        ctx.font = "bold 16px serif";
+        ctx.textAlign = "center";
+        ctx.fillText("灵犀鉴定", 0, 8);
+        ctx.restore();
+    }
+
+    // 7. 底部装饰
     ctx.textAlign = "center";
-    ctx.beginPath();
-    ctx.strokeStyle = "rgba(139, 126, 102, 0.3)";
-    ctx.moveTo(30, 540);
-    ctx.lineTo(370, 540);
-    ctx.stroke();
+    ctx.fillStyle = "#d32f2f";
+    ctx.font = "bold 16px sans-serif";
+    ctx.fillText("看看你的朋友，是什么货色 😏", 200, 600);
 
-    // 底部文字
-    ctx.fillStyle = "#d32f2f"; 
-    ctx.font = "bold 18px sans-serif";
-    ctx.fillText("看看你的朋友，是什么货色 😏", 200, 565);
-
-    ctx.fillStyle = "#666"; 
+    ctx.fillStyle = "#666";
     ctx.font = "12px sans-serif";
-    ctx.fillText("关注公号【灵犀测评局】", 200, 590); 
-
-    ctx.fillStyle = "#999"; 
-    ctx.font = "12px sans-serif";
-    ctx.fillText("扫码回复 [不干了] 开启诊断", 200, 610);
-    
-    ctx.fillStyle = "#999";
+    ctx.fillText("关注公号【灵犀测评局】", 200, 630);
+    ctx.fillText("扫码回复 [不干了] 开启诊断", 200, 650);
     ctx.font = "10px Arial";
-    ctx.fillText("©灵犀测评局", 200, 635);
+    ctx.fillText("© 2026 灵犀测评局", 200, 675);
 
-    // 输出图片
-    document.getElementById('share-img').src = canvas.toDataURL("image/png");
+    // 8. 转换输出
+    const img = document.getElementById('share-img');
+    img.src = canvas.toDataURL("image/png");
 }
 </script>
 </body>
