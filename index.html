@@ -1,290 +1,69 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>职场精神状态扫描报告</title>
-    <style>
-        :root { --neon-green: #39ff14; --office-gray: #1e1e1e; --warning-red: #ff3131; }
-        body { background: #000; color: #fff; font-family: sans-serif; margin: 0; overflow-x: hidden; }
-        .container { max-width: 500px; margin: 0 auto; padding: 20px; text-align: center; }
-        .hidden { display: none !important; }
-        .q-card { background: rgba(30, 30, 30, 0.8); backdrop-filter: blur(10px); border: 1px solid var(--neon-green); padding: 25px; border-radius: 20px; margin-top: 30px; box-shadow: 0 0 20px rgba(57, 255, 20, 0.2); position: relative; }
-        .progress-container { width: 100%; height: 6px; background: #333; border-radius: 3px; margin-bottom: 20px; overflow: hidden; }
-        .progress-bar { height: 100%; background: var(--neon-green); width: 0%; box-shadow: 0 0 10px var(--neon-green); transition: width 0.3s ease; }
-        .opt-btn { display: block; width: 100%; padding: 15px; margin: 12px 0; background: rgba(255, 255, 255, 0.05); color: #eee; border: 1px solid rgba(57, 255, 20, 0.3); border-radius: 12px; text-align: left; font-size: 15px; transition: all 0.2s; cursor: pointer; }
-        .opt-btn:active { background: var(--neon-green); color: #000; transform: scale(0.98); }
-        .title { font-size:28px; color:var(--neon-green); margin-top:20vh; text-shadow:0 0 10px var(--neon-green); }
-        .subtitle { color:#aaa; margin-top:10px; font-size:14px; }
-        .scan-line { width:80%; height:2px; background:var(--neon-green); margin:20px auto; animation:scan 2s infinite linear; }
-        @keyframes scan { 0% {transform:translateX(-50px); opacity:0;} 50% {opacity:1;} 100% {transform:translateX(50px); opacity:0;} }
-        .start-btn { width:100%; padding:15px; background:var(--neon-green); color:#000; border:none; border-radius:10px; font-size:16px; font-weight:bold; box-shadow:0 0 15px var(--neon-green); cursor: pointer; }
-        .bg-neon { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at 20% 20%, rgba(57,255,20,0.15) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(255,49,49,0.1) 0%, transparent 40%); animation: breathe 8s infinite alternate ease-in-out; z-index: -1; }
-        @keyframes breathe { 0% { opacity: 0.3; } 100% { opacity: 0.8; } }
-        .floating-word { position: absolute; color: rgba(57,255,20,0.1); font-size: 12px; animation: float 6s infinite linear; z-index: -1; }
-        @keyframes float { 0% { transform: translateY(10px); opacity: 0.2; } 100% { transform: translateY(-10px); opacity: 0.2; } }
-        #share-img { width: 100%; border-radius: 10px; box-shadow: 0 0 20px rgba(255,255,255,0.1); margin-top: 15px; }
-    </style>
-</head>
-<body>
-
-<audio id="bgm" loop><source src="environment.mp3" type="audio/mpeg"></audio>
-<audio id="clickAudio"><source src="click.mp3" type="audio/mpeg"></audio>
-<audio id="resultAudio"><source src="result.mp3" type="audio/mpeg"></audio>
-
-<div class="container">
-    <button id="musicBtn" class="opt-btn" style="position:fixed;top:10px;right:10px;width:auto;padding:8px 12px;font-size:12px;z-index:999;" onclick="toggleMusic()">🔊 开启音乐</button>
-    
-    <div id="page-home">
-        <div class="bg-neon"></div>
-        <div class="floating-word" style="top:10%; left:10%;">摸鱼</div>
-        <div class="floating-word" style="top:20%; left:80%;">PUA</div>
-        <div class="floating-word" style="top:40%; left:20%;">内卷</div>
-        <div class="floating-word" style="top:60%; left:70%;">KPI</div>
-        
-        <h1 class="title">职场精神状态扫描报告</h1>
-        <p class="subtitle">你的班味超标了吗？</p>
-        <div class="scan-line"></div>
-        <button class="start-btn" onclick="startQuiz()">立即诊断</button>
-        <p style="font-size:12px; color:#666; margin-top:15px;">⚠ 本测试可能引发轻微共鸣不适</p>
-    </div>
-
-    <div id="page-quiz" class="hidden">
-        <div class="progress-container"><div id="p-bar" class="progress-bar"></div></div>
-        <div id="quiz-content"></div>
-        <div style="margin-top:20px;">
-            <button class="opt-btn" style="background:#444; text-align:center;" onclick="goPrev()">← 返回上一题</button>
-        </div>
-    </div>
-
-    <div id="page-result" class="hidden">
-        <p style="font-size:16px; color:#fff; margin-top:15px;">
-            回复 <span style="color:#39ff14; font-weight:bold; font-size:20px;">【不干了】</span><br>
-            开启你的 2026 职场诊断
-        </p>
-        <h2 id="loading-text" style="color:var(--neon-green)">报告生成中...</h2>
-        <canvas id="resCanvas" style="display:none;"></canvas>
-        <img id="share-img">
-        <p style="font-size:12px; color:#888; margin-top:10px;">长按图片保存 👆</p>
-    </div>
-</div>
-
-<script>
-let currentStep = 0;
-let scores = { W: 0, M: 0, F: 0, S: 0 };
-let historyStack = [];
-
-const questions = [
-    { q: "周一睁眼的第一反应是？", options: [{ t: "立刻清醒，准备开启打工的一天", w: { W: 15 } },{ t: "再睡五分钟，反正去了也摸鱼", w: { M: 15 } },{ t: "想把闹钟、手机、公司一起砸了", w: { F: 20 } },{ t: "面无表情，已经习惯这种痛苦", w: { S: 10 } }]},
-    { q: "老板在群里发了一个‘？’，你会？", options: [{ t: "心跳加速，疯狂检查自己有没有犯错", w: { W: 15, S: 5 } },{ t: "假装没看见，继续刷短视频", w: { M: 20 } },{ t: "直接回一个问号，主打一个对抗", w: { F: 20 } },{ t: "淡定观望，反正跟我没关系", w: { S: 15 } }]},
-    { q: "下班后工作消息来袭，你会？", options: [{ t: "秒回，生怕耽误工作进度", w: { W: 20 } },{ t: "已读不回，主打一个离线自由", w: { M: 15 } },{ t: "直接开骂，谁也别想打扰我", w: { F: 20 } },{ t: "明天再处理，下班就该有下班样", w: { S: 15 } }]},
-    { q: "领导画大饼画到飞起，你内心？", options: [{ t: "努力奋斗，争取实现老板梦想", w: { W: 15 } },{ t: "左耳进右耳出，听听就好", w: { M: 15 } },{ t: "想当场戳穿，别演了行不行", w: { F: 20 } },{ t: "礼貌微笑，内心毫无波澜", w: { S: 15 } }]},
-    { q: "你的工位最常出现的东西是？", options: [{ t: "咖啡、文件、加班必备品", w: { W: 15 } },{ t: "零食、解压玩具、摸鱼神器", w: { M: 15 } },{ t: "写满吐槽文案的便利贴", w: { F: 15 } },{ t: "简单干净，没什么多余物品", w: { S: 10 } }]},
-    { q: "周末临时被叫去加班改需求？", options: [{ t: "立刻答应，马上打开电脑", w: { W: 20 } },{ t: "拖延应付，随便改两下交差", w: { M: 15 } },{ t: "直接拒绝，周末概不营业", w: { F: 20 } },{ t: "无奈接受，但心情极度糟糕", w: { S: 10, W: 5 } }]},
-    { q: "同事偷偷摸鱼被你撞见，你会？", options: [{ t: "默默提醒他别被老板发现", w: { W: 10, S: 10 } },{ t: "加入他，一起快乐摸鱼", w: { M: 20 } },{ t: "当场起哄，主打一个看热闹", w: { F: 15 } },{ t: "假装没看见，互不打扰", w: { S: 15 } }]},
-    { q: "听到‘赋能、闭环、抓手’等黑话，你？", options: [{ t: "认真学习，努力融入职场", w: { W: 15 } },{ t: "一脸懵，完全不知道在说啥", w: { M: 15 } },{ t: "当场吐槽，这都是什么废话", w: { F: 20 } },{ t: "淡定听着，不参与不评价", w: { S: 10 } }]},
-    { q: "如果明天世界末日，你最后一件事？", options: [{ t: "把未完成的工作做完再走", w: { W: 25 } },{ t: "拉黑所有工作群彻底解放", w: { M: 20 } },{ t: "去公司大闹一场释放自我", w: { F: 25 } },{ t: "安静躺平，接受一切结局", w: { S: 15 } }]},
-    { q: "发现公司在招你的替代者，你？", options: [{ t: "恐慌焦虑，立刻加倍努力", w: { W: 20 } },{ t: "无所谓，正好等着拿赔偿", w: { M: 20 } },{ t: "直接开摆，爱咋咋地", w: { F: 20 } },{ t: "冷静观望，提前准备后路", w: { S: 15 } }]},
-    { q: "周六强制团建去爬山，你？", options: [{ t: "准时参加，绝不缺席", w: { W: 15 } },{ t: "找借口请假，坚决不去", w: { M: 15 } },{ t: "在群里公开反对这种破事", w: { F: 20 } },{ t: "被迫参加，但全程摆脸", w: { S: 10 } }]},
-    { q: "老板说：公司就是你的家，你回应？", options: [{ t: "谢谢老板，我一定好好干", w: { W: 20 } },{ t: "那我能不能在家上班", w: { M: 15 } },{ t: "那我要在家发工资才行", w: { F: 20 } },{ t: "微笑不语，不想接话", w: { S: 15 } }]},
-    { q: "电脑蓝屏文件全没了，你第一反应？", options: [{ t: "崩溃绝望，想立刻重做", w: { W: 15 } },{ t: "太好了，今天不用干活了", w: { M: 20 } },{ t: "当场暴走，想砸烂电脑", w: { F: 20 } },{ t: "淡定重启，大不了重来", w: { S: 15 } }]},
-    { q: "写周报必须用职场黑话，你？", options: [{ t: "认真研究，努力写得专业", w: { W: 15 } },{ t: "复制粘贴，随便糊弄完事", w: { M: 15 } },{ t: "乱写一通，主打一个发疯", w: { F: 20 } },{ t: "简单写实，不搞虚的", w: { S: 10 } }]},
-    { q: "午休一小时，你通常在干嘛？", options: [{ t: "继续工作，卷死所有人", w: { W: 20 } },{ t: "彻底消失，快乐摸鱼", w: { M: 20 } },{ t: "吐槽公司，发泄情绪", w: { F: 15 } },{ t: "安静休息，恢复精力", w: { S: 15 } }]},
-    { q: "新来的实习生比你还会卷，你？", options: [{ t: "倍感压力，决定更努力", w: { W: 15 } },{ t: "无所谓，我继续我的节奏", w: { M: 15 } },{ t: "直接开摆，看他能卷多久", w: { F: 15 } },{ t: "平常心，每个人选择不同", w: { S: 15 } }]},
-    { q: "年终奖发的是迟到券，你？", options: [{ t: "安慰自己，有总比没有强", w: { W: 15, S: 5 } },{ t: "默默收下，下次迟到用", w: { M: 15 } },{ t: "当场发飙，这纯属侮辱人", w: { F: 25 } },{ t: "淡定接受，早就习惯了", w: { S: 15 } }]},
-    { q: "穿越回刚入职那天，你会？", options: [{ t: "加倍努力，少走弯路", w: { W: 20 } },{ t: "转身就跑，绝对不入坑", w: { M: 20 } },{ t: "直接怼翻面试官，爽一把", w: { F: 25 } },{ t: "平静接受，一切都是命运", w: { S: 15 } }]},
-    { q: "电梯里偶遇大老板，你会？", options: [{ t: "主动打招呼，表现自己", w: { W: 15 } },{ t: "低头玩手机，假装看不见", w: { M: 15 } },{ t: "大胆对视，丝毫不慌", w: { F: 15 } },{ t: "保持礼貌，不卑不亢", w: { S: 15 } }]},
-    { q: "对2026年职场中的自己说一句话？", options: [{ t: "继续加油，早日升职加薪", w: { W: 15 } },{ t: "好好摸鱼，平安混到退休", w: { M: 15 } },{ t: "再不开心就辞职，别委屈", w: { F: 20 } },{ t: "保持心态，平安健康最重要", w: { S: 15 } }]}
-];
-
-const bgm = document.getElementById('bgm');
-const musicBtn = document.getElementById('musicBtn');
-let musicOn = false;
-
-function toggleMusic() {
-    musicOn = !musicOn;
-    if(musicOn) { bgm.play(); musicBtn.textContent = '🔇 关闭音乐'; }
-    else { bgm.pause(); musicBtn.textContent = '🔊 开启音乐'; }
+/* ==============================================
+🔥 真实界面 · 厚重感 + 浮雕 + 深度 + 立体感
+============================================== */
+#page-quiz {
+    background: linear-gradient(180deg, #0F0F11, #1A1A1F);
+    background-image: url(https://www.photo.com/image/dark-metal-pattern.jpg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-blend-mode: overlay;
+    padding: 20px;
+    min-height: 100vh;
 }
 
-function startQuiz() {
-    document.getElementById('page-home').classList.add('hidden');
-    document.getElementById('page-quiz').classList.remove('hidden');
-    currentStep = 0;
-    scores = { W: 0, M: 0, F: 0, S: 0 };
-    renderNext();
+/* 界面卡片 —— 真正厚重、悬浮、浮雕感 */
+#quiz-content {
+    background: #18181B;
+    border-radius: 22px;
+    padding: 35px 28px;
+    box-shadow: 
+        0 30px 60px rgba(0,0,0,0.4),
+        0 20px 40px rgba(0,0,0,0.3),
+        inset 0 1px 1px rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.06);
+    position: relative;
+    overflow: hidden;
 }
 
-function renderNext() {
-    if (currentStep >= questions.length) { showResult(); return; }
-    const progress = (currentStep / questions.length) * 100;
-    document.getElementById('p-bar').style.width = progress + '%';
-    const q = questions[currentStep];
-    let html = `<div class="q-card"><p style="color:var(--neon-green)">Question ${currentStep + 1}</p><h3>${q.q}</h3>`;
-    q.options.forEach((opt, i) => { 
-        html += `<button class="opt-btn" onclick="handleChoice(${i})">${String.fromCharCode(65+i)}. ${opt.t}</button>`; 
-    });
-    html += `</div>`;
-    document.getElementById('quiz-content').innerHTML = html;
+/* 内浮雕 —— 最关键的厚重感 */
+#quiz-content::before {
+    content: "";
+    position: absolute;
+    top: 12px; left: 12px; right: 12px; bottom: 12px;
+    border-radius: 12px;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+    pointer-events: none;
 }
 
-function handleChoice(i) {
-    document.getElementById('clickAudio').play().catch(()=>{});
-    historyStack.push({step: currentStep, score: {...scores}});
-    const w = questions[currentStep].options[i].w;
-    for (let k in w) scores[k] += w[k];
-    currentStep++;
-    renderNext();
+/* 按钮 —— 真正立体、像实物按键 */
+.opt-btn {
+    background: linear-gradient(180deg, #222, #2D2D30);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 20px 18px;
+    box-shadow: 
+        0 4px 10px rgba(0,0,0,0.25),
+        inset 0 1px 1px rgba(255,255,255,0.04);
+    transition: all 0.2s ease;
+}
+.opt-btn:active {
+    background: linear-gradient(180deg, #111, #1A1A1F);
+    box-shadow: 
+        0 2px 5px rgba(0,0,0,0.3),
+        inset 0 1px 2px rgba(0,0,0,0.4);
+    transform: scale(0.97);
 }
 
-function goPrev() {
-    if (historyStack.length === 0) return;
-    const last = historyStack.pop();
-    currentStep = last.step;
-    scores = last.score;
-    renderNext();
+/* 进度条 —— 真实机器进度条 */
+.progress-container {
+    background: #111;
+    border-radius: 99px;
+    height: 10px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
 }
-
-const map = {
-    WW:{title:"纯种究极社畜",desc:"血液里流淌KPI，灵魂焊死在工位。",advice:["强制下班断电，杜绝自我感动式加班。","减少精神内耗，公司没你并不会倒闭。","每月摸鱼一次，激活快要枯死的灵魂。"]},
-    WM:{title:"精致利己打工仔",desc:"表面努力干活，实则精准摸鱼。",advice:["继续保持摸鱼技巧，别被老板抓现行。","适当降低表演欲，活得更轻松一点。","工资到位再干活，别当免费劳模。"]},
-    WF:{title:"自爆型加班怪",desc:"一边疯狂加班，一边疯狂骂街。",advice:["加班可以，减压第一。","骂街请私下进行，保住饭碗更重要。","每周放空一天，彻底切断工作信号。"]},
-    WS:{title:"工位千年兵马俑",desc:"情绪极度稳定，只要不开除能坐到老。",advice:["适当活动筋骨，别真长成工位摆件。","偶尔表达需求，别一直当软柿子。","给自己找点乐子，人生不止上班。"]},
-    MW:{title:"带薪摸鱼大师",desc:"在老板眼皮底下偷时间，已入化境。",advice:["低调发展，不要教坏同事连累自己。","关键节点露个脸，避免被优化。","摸鱼同时提升自己，为跑路做准备。"]},
-    MM:{title:"摆烂界天花板",desc:"工资照领活儿不干，公司兴衰与我无瓜。",advice:["保持底线，别太明显被抓典型。","摆烂但别颓废，业余搞点小快乐。","存钱要紧，万一失业也能躺更久。"]},
-    MF:{title:"阴阳怪气摸鱼王",desc:"不干活还嘲讽别人，嘴比工作积极。",advice:["收敛锋芒，别被同事集体孤立。","吐槽适度，小心被录音背刺。","实在不爽就换环境，别一直内耗。"]},
-    MS:{title:"工位入定老僧",desc:"外界鸡飞狗跳，我自岿然不动。",advice:["继续保持心态，你已经赢了大多数人。","偶尔参与社交，避免彻底透明化。","守住边界，不被额外工作绑架。"]},
-    FW:{title:"疯批卷王",desc:"又卷又疯，谁拦我干活我跟谁急。",advice:["卷可以，但别卷到没朋友。","发疯要分场合，别当众顶飞领导。","学会休息，否则容易突然崩盘。"]},
-    FM:{title:"赛博职场刺客",desc:"平时隐身摸鱼，出手专治不服。",advice:["藏好身份，做幕后高人更安全。","别轻易出手，枪打出头鸟。","关键时刻再亮招，平时低调划水。"]},
-    FF:{title:"顶级疯批巨星",desc:"公司是舞台，发疯是日常，随心所欲。",advice:["发疯适度，别把自己作离职。","树立疯批人设，减少无效麻烦。","快乐最重要，但社保也不能断。"]},
-    FS:{title:"笑面疯批",desc:"表面温和淡定，内心疯狂吐槽。",advice:["内心戏别太足，容易累坏自己。","适当表达真实想法，别总憋着。","保持微笑，但该硬气时别软。"]},
-    SW:{title:"全自动职场NPC",desc:"稳定又努力，因为太正常格格不入。",advice:["不用刻意合群，正常就是最大优势。","学会拒绝，别当万能工具人。","保持清醒，别被职场PUA洗脑。"]},
-    SM:{title:"提前退休心态",desc:"年纪轻轻看破红尘，上班只为混口饭。",advice:["继续低欲望生活，减少焦虑。","悄悄搞副业，为真正退休铺路。","别完全躺平，留条后路更稳。"]},
-    SF:{title:"温柔疯批判官",desc:"不吵不闹，但每句都扎心。",advice:["保持温柔，但要有锋芒。","看破不说破，给自己留余地。","别过度评判他人，管好自己就行。"]},
-    SS:{title:"人间清醒佛陀",desc:"慈悲看戏，从不生气，职场活神仙。",advice:["继续修行，你已经基本成佛。","偶尔入世，别完全脱离人群。","守护好心情，比什么都珍贵。"]}
-};
-
-// 辅助函数：图片加载
-function loadImage(src) {
-    return new Promise((resolve) => {
-        const img = new Image();
-        img.crossOrigin = "Anonymous"; 
-        img.onload = () => resolve(img);
-        img.onerror = () => resolve(null); 
-        img.src = src;
-    });
+.progress-bar {
+    background: linear-gradient(90deg, #00FFAA, #00CCFF);
+    border-radius: 99px;
+    box-shadow: 0 0 10px #00FFAA;
 }
-
-async function showResult() {
-    document.getElementById('resultAudio').play().catch(()=>{});
-    document.getElementById('page-quiz').classList.add('hidden');
-    document.getElementById('page-result').classList.remove('hidden');
-
-    const sorted = Object.keys(scores).sort((a,b)=>scores[b]-scores[a]);
-    const key = sorted[0] + sorted[1];
-    const res = map[key] || map.SW;
-
-    await generateFinalImage(res.title, res.desc, res.advice);
-    document.getElementById('loading-text').innerText = "诊断完成！";
-}
-
-async function generateFinalImage(title, desc, adv) {
-    const canvas = document.getElementById('resCanvas');
-    const ctx = canvas.getContext('2d');
-    const s = 2; 
-    canvas.width = 400 * s;
-    canvas.height = 700 * s; 
-    ctx.scale(s, s);
-
-    // 1. 背景
-    ctx.fillStyle = "#f4f1ea";
-    ctx.fillRect(0, 0, 400, 700);
-    ctx.strokeStyle = "#8b7e66";
-    ctx.lineWidth = 1;
-    ctx.strokeRect(10, 10, 380, 680);
-
-    // 2. 头部
-    ctx.fillStyle = "#333";
-    ctx.textAlign = "center";
-    ctx.font = "bold 20px Arial";
-    ctx.fillText("2026 职场精神状态扫描报告", 200, 60);
-    ctx.font = "12px Arial";
-    ctx.fillText("NO. " + Math.random().toString().slice(2, 10), 200, 85);
-
-    // 3. 结果标题
-    ctx.fillStyle = "#d32f2f"; 
-    ctx.font = "bold 32px sans-serif";
-    ctx.fillText(title, 200, 160);
-
-    // 4. 临床表现
-    ctx.fillStyle = "#555";
-    ctx.font = "bold 15px sans-serif";
-    ctx.fillText("【 临床表现 】", 200, 210);
-    ctx.font = "14px sans-serif";
-    ctx.fillText(desc, 200, 240);
-
-    // 5. 医生建议
-    ctx.textAlign = "left";
-    ctx.fillStyle = "#333";
-    ctx.font = "bold 15px sans-serif";
-    ctx.fillText("【 医生建议 】", 40, 310);
-    ctx.font = "13px sans-serif";
-    adv.forEach((text, i) => {
-        ctx.fillText("· " + text, 40, 345 + (i * 28));
-    });
-
-    // 6. 加载并绘制素材
-    const [qrImg, sealImg] = await Promise.all([
-        loadImage('qrcode.jpg'),
-        loadImage('lx.png')
-    ]);
-
-    // 绘制二维码
-    if (qrImg) {
-        ctx.drawImage(qrImg, 150, 460, 100, 100);
-    } else {
-        ctx.strokeStyle = "#ccc";
-        ctx.strokeRect(150, 460, 100, 100);
-        ctx.fillStyle = "#999";
-        ctx.font = "10px Arial";
-        ctx.textAlign = "center";
-        ctx.fillText("此处为二维码", 200, 515);
-    }
-
-    // 绘制印章 (如果不成功则绘制模拟红印)
-    if (sealImg) {
-        ctx.drawImage(sealImg, 270, 460, 90, 90);
-    } else {
-        ctx.save();
-        ctx.translate(315, 505);
-        ctx.rotate(-0.2);
-        ctx.strokeStyle = "rgba(211,47,47,0.7)";
-        ctx.lineWidth = 3;
-        ctx.strokeRect(-35, -35, 70, 70);
-        ctx.fillStyle = "rgba(211,47,47,0.7)";
-        ctx.font = "bold 16px serif";
-        ctx.textAlign = "center";
-        ctx.fillText("灵犀鉴定", 0, 8);
-        ctx.restore();
-    }
-
-    // 7. 底部装饰
-    ctx.textAlign = "center";
-    ctx.fillStyle = "#d32f2f";
-    ctx.font = "bold 16px sans-serif";
-    ctx.fillText("看看你的朋友，是什么货色 😏", 200, 600);
-
-    ctx.fillStyle = "#666";
-    ctx.font = "12px sans-serif";
-    ctx.fillText("关注公号【灵犀测评局】", 200, 630);
-    ctx.fillText("扫码回复 [不干了] 开启诊断", 200, 650);
-    ctx.font = "10px Arial";
-    ctx.fillText("© 2026 灵犀测评局", 200, 675);
-
-    // 8. 转换输出
-    const img = document.getElementById('share-img');
-    img.src = canvas.toDataURL("image/png");
-}
-</script>
-</body>
-</html>
