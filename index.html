@@ -222,14 +222,14 @@ function drawShareImage(title, desc, adv) {
     canvas.height = 650 * s; 
     ctx.scale(s, s);
 
-    // 1. 底色和边框
+    // 背景
     ctx.fillStyle = "#f4f1ea";
     ctx.fillRect(0, 0, 400, 650);
     ctx.strokeStyle = "#8b7e66";
     ctx.lineWidth = 1;
     ctx.strokeRect(10, 10, 380, 630);
 
-    // 2. 绘制诊断报告文字
+    // 文字
     ctx.fillStyle = "#333";
     ctx.font = "bold 22px Arial";
     ctx.textAlign = "center";
@@ -245,7 +245,6 @@ function drawShareImage(title, desc, adv) {
     ctx.font = "bold 16px sans-serif";
     ctx.fillText("【临床表现】", 200, 210);
     
-    // 自动换行处理描述文字
     ctx.font = "14px sans-serif";
     ctx.fillText(desc, 200, 240);
 
@@ -258,30 +257,12 @@ function drawShareImage(title, desc, adv) {
     ctx.fillText("· " + adv[1], 40, 375);
     ctx.fillText("· " + adv[2], 40, 400);
 
-    // 3. 处理印章与导出
-    const sealImg = new Image();
-    // 关键修复：尝试处理跨域，如果还是不行，onerror 会接管
-    sealImg.crossOrigin = "Anonymous"; 
-    sealImg.src = 'lx.jpg'; 
-
-    sealImg.onload = function() {
-        try {
-            ctx.drawImage(sealImg, 270, 430, 100, 100);
-            finishDrawing(ctx, canvas);
-        } catch (e) {
-            console.warn("印章图片导致跨域错误，正在生成无印章版本");
-            finishDrawing(ctx, canvas);
-        }
-    };
-
-    sealImg.onerror = function() {
-        console.warn("印章图片加载失败（检查文件名是否为lx.jpg），正在生成无印章版本");
-        finishDrawing(ctx, canvas);
-    };
+    // 直接绘制，不搞异步！最稳定！
+    finishDrawing(ctx, canvas);
 }
 
 function finishDrawing(ctx, canvas) {
-    // 4. 底部文案
+    // 底部线
     ctx.textAlign = "center";
     ctx.beginPath();
     ctx.strokeStyle = "rgba(139, 126, 102, 0.3)";
@@ -289,6 +270,7 @@ function finishDrawing(ctx, canvas) {
     ctx.lineTo(370, 540);
     ctx.stroke();
 
+    // 底部文字
     ctx.fillStyle = "#d32f2f"; 
     ctx.font = "bold 18px sans-serif";
     ctx.fillText("看看你的朋友，是什么货色 😏", 200, 565);
@@ -300,6 +282,12 @@ function finishDrawing(ctx, canvas) {
     ctx.fillStyle = "#999"; 
     ctx.font = "12px sans-serif";
     ctx.fillText("扫码回复 [不干了] 开启诊断", 200, 610);
+    
+    ctx.fillStyle = "#999";
+    ctx.font = "10px Arial";
+    ctx.fillText("©灵犀测评局", 200, 635);
+
+    // 输出图片
     document.getElementById('share-img').src = canvas.toDataURL("image/png");
 }
 </script>
