@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>职场精神状态扫描报告</title>
     <style>
-        :root { --neon-green: #39ff14; --office-gray: #1e1e1e; --warning-red: #ff313; }
+        :root { --neon-green: #39ff14; --office-gray: #1e1e1e; --warning-red: #ff3131; }
         body { background: #000; color: #fff; font-family: sans-serif; margin: 0; overflow-x: hidden; }
         .container { max-width: 500px; margin: 0 auto; padding: 20px; text-align: center; }
         
@@ -116,7 +116,6 @@ let currentStep = 0;
 let scores = { W: 0, M: 0, F: 0, S: 0 };
 let historyStack = [];
 
-// 这里保留你原始的所有题目数据
 const questions = [
     { q: "周一睁眼的第一反应是？", options: [{ t: "立刻清醒，准备开启打工的一天", w: { W: 15 } },{ t: "再睡五分钟，反正去了也摸鱼", w: { M: 15 } },{ t: "想把闹钟、手机、公司一起砸了", w: { F: 20 } },{ t: "面无表情，已经习惯这种痛苦", w: { S: 10 } }]},
     { q: "老板在群里发了一个‘？’，你会？", options: [{ t: "心跳加速，疯狂检查自己有没有犯错", w: { W: 15, S: 5 } },{ t: "假装没看见，继续刷短视频", w: { M: 20 } },{ t: "直接回一个问号，主打一个对抗", w: { F: 20 } },{ t: "淡定观望，反正跟我没关系", w: { S: 15 } }]},
@@ -159,11 +158,8 @@ function startQuiz() {
 
 function renderNext() {
     if (currentStep >= questions.length) { showResult(); return; }
-    
-    // 同步进度条
     const progress = (currentStep / questions.length) * 100;
     document.getElementById('p-bar').style.width = progress + '%';
-
     const q = questions[currentStep];
     let html = `<div class="q-card"><p style="color:var(--neon-green)">Question ${currentStep + 1}</p><h3>${q.q}</h3>`;
     q.options.forEach((opt, i) => { 
@@ -194,11 +190,8 @@ function showResult() {
     document.getElementById('resultAudio').play().catch(()=>{});
     document.getElementById('page-quiz').classList.add('hidden');
     document.getElementById('page-result').classList.remove('hidden');
-    
     const sorted = Object.keys(scores).sort((a,b)=>scores[b]-scores[a]);
     const key = sorted[0] + sorted[1];
-    
-    // 这里完全恢复为你策划的原始文案
     const map = {
         WW:{title:"纯种究极社畜",desc:"血液里流淌KPI，灵魂焊死在工位，公司没你真会停转。",advice:["强制下班断电，杜绝自我感动式加班。","减少精神内耗，老板没你并不会倒闭。","每月摸鱼一次，激活快要枯死的灵魂。"]},
         WM:{title:"精致利己打工仔",desc:"表面努力干活，实则精准摸鱼，主打性价比最高。",advice:["继续保持摸鱼技巧，别被老板抓现行。","适当降低表演欲，活得更轻松一点。","工资到位再干活，别当免费劳模。"]},
@@ -224,18 +217,19 @@ function showResult() {
 function drawShareImage(title, desc, adv) {
     const canvas = document.getElementById('resCanvas');
     const ctx = canvas.getContext('2d');
-    const s = 2;
+    const s = 2; 
     canvas.width = 400 * s;
-    canvas.height = 650 * s;
+    canvas.height = 650 * s; 
     ctx.scale(s, s);
 
+    // 1. 底色和边框
     ctx.fillStyle = "#f4f1ea";
     ctx.fillRect(0, 0, 400, 650);
-    
     ctx.strokeStyle = "#8b7e66";
     ctx.lineWidth = 1;
     ctx.strokeRect(10, 10, 380, 630);
 
+    // 2. 绘制诊断报告文字
     ctx.fillStyle = "#333";
     ctx.font = "bold 22px Arial";
     ctx.textAlign = "center";
@@ -250,6 +244,8 @@ function drawShareImage(title, desc, adv) {
     ctx.fillStyle = "#555";
     ctx.font = "bold 16px sans-serif";
     ctx.fillText("【临床表现】", 200, 210);
+    
+    // 自动换行处理描述文字
     ctx.font = "14px sans-serif";
     ctx.fillText(desc, 200, 240);
 
@@ -258,73 +254,53 @@ function drawShareImage(title, desc, adv) {
     ctx.font = "bold 14px sans-serif";
     ctx.fillText("【医生建议】", 40, 320);
     ctx.font = "13px sans-serif";
-    ctx.fillText(adv[0], 40, 350);
-    ctx.fillText(adv[1], 40, 375);
-    ctx.fillText(adv[2], 40, 400);
+    ctx.fillText("· " + adv[0], 40, 350);
+    ctx.fillText("· " + adv[1], 40, 375);
+    ctx.fillText("· " + adv[2], 40, 400);
 
-    ctx.save();
-    ctx.translate(320, 480);
+    // 3. 处理印章与导出
+    const sealImg = new Image();
+    // 关键修复：尝试处理跨域，如果还是不行，onerror 会接管
+    sealImg.crossOrigin = "Anonymous"; 
+    sealImg.src = 'lx.jpg'; 
 
-    ctx.beginPath();
-    ctx.strokeStyle = "rgba(211,47,47,0.8)";
-    ctx.lineWidth = 3;
-    ctx.arc(0, 0, 45, 0, Math.PI * 2);
-    ctx.stroke();
+    sealImg.onload = function() {
+        try {
+            ctx.drawImage(sealImg, 270, 430, 100, 100);
+            finishDrawing(ctx, canvas);
+        } catch (e) {
+            console.warn("印章图片导致跨域错误，正在生成无印章版本");
+            finishDrawing(ctx, canvas);
+        }
+    };
 
-    ctx.fillStyle = "rgba(211,47,47,0.9)";
-    ctx.font = "bold 16px sans-serif";
+    sealImg.onerror = function() {
+        console.warn("印章图片加载失败（检查文件名是否为lx.jpg），正在生成无印章版本");
+        finishDrawing(ctx, canvas);
+    };
+}
+
+function finishDrawing(ctx, canvas) {
+    // 4. 底部文案
     ctx.textAlign = "center";
-    ctx.fillText("同意", 0, 5);
-
-    const sealText = "灵犀测评局加班专用章";
-    const chars = sealText.split("");
-    const radius = 33;
-    const arcRange = Math.PI * 1.1;
-    const startAngle = -Math.PI / 2 - (arcRange / 2);
-    const step = arcRange / (chars.length - 1);
-
-    ctx.font = "bold 10px SimSun, serif";
-    ctx.fillStyle = "rgba(211,47,47,0.8)";
-    ctx.textBaseline = "middle";
-
-    chars.forEach((char, i) => {
-        const angle = startAngle + (i * step);
-        ctx.save();
-        ctx.rotate(angle);
-        ctx.translate(0, -radius);
-        ctx.rotate(Math.PI / 2);
-        ctx.textAlign = "center";
-        ctx.fillText(char, 0, 0);
-        ctx.restore();
-    });
-    ctx.restore();
-
     ctx.beginPath();
     ctx.strokeStyle = "rgba(139, 126, 102, 0.3)";
     ctx.moveTo(30, 540);
     ctx.lineTo(370, 540);
     ctx.stroke();
 
-    ctx.textAlign = "center";
-    ctx.fillStyle = "#666";
-    ctx.font = "13px sans-serif";
-    ctx.textAlign = "center";
-    ctx.fillStyle = "#333";
-    ctx.font = "bold 16px sans-serif";
-    ctx.fillText("发给你的朋友，看看他是什么货色 😏", 200, 540);
-
     ctx.fillStyle = "#d32f2f"; 
     ctx.font = "bold 18px sans-serif";
-    ctx.fillText("扫码回复 [不干了] 开启诊断", 200, 595);
+    ctx.fillText("看看你的朋友，是什么货色 😏", 200, 565);
 
-    ctx.fillStyle = "#999";
-    ctx.font = "10px Arial";
-    ctx.fillText("©灵犀测评局", 200, 625);
+    ctx.fillStyle = "#666"; 
+    ctx.font = "12px sans-serif";
+    ctx.fillText("关注公号【灵犀测评局】", 200, 590); 
 
-    // ========== GitHub 专用修复：仅此处改动 ==========
-    const imgEl = document.getElementById('share-img');
-    imgEl.src = '';
-    imgEl.src = canvas.toDataURL('image/png');
+    ctx.fillStyle = "#999"; 
+    ctx.font = "12px sans-serif";
+    ctx.fillText("扫码回复 [不干了] 开启诊断", 200, 610);
+    document.getElementById('share-img').src = canvas.toDataURL("image/png");
 }
 </script>
 </body>
