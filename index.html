@@ -25,7 +25,6 @@
         }
         .hidden { display: none !important; }
         
-        /* 首页宣传图 */
         .brand-poster { 
             width: 100%; 
             border: 1px solid var(--neon-green); 
@@ -176,7 +175,6 @@
             box-shadow:0 0 15px var(--neon-green); 
             cursor: pointer; 
         }
-          /* 纯代码 · 超级复杂 · 赛博朋克首页海报 */
           .poster-container {
             width: 100%;
             padding: 10px 0;
@@ -197,7 +195,6 @@
             border-radius: 8px;
           }
           
-          /* 三层扫描线 */
           .scan-line-top,
           .scan-line-middle,
           .scan-line-bottom {
@@ -217,7 +214,6 @@
             100% { top: 100%; opacity: 0; }
           }
           
-          /* 六角网格 LOGO */
           .hex-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -246,7 +242,6 @@
             100% { opacity: 0.3; }
           }
           
-          /* 文字组 */
           .text-group {
             position: absolute;
             top: 110px;
@@ -283,7 +278,6 @@
             border: 1px solid #00ffaa;
           }
           
-          /* 三层轨道环 */
           .orbit-ring {
             position: absolute;
             top: 50%;
@@ -302,7 +296,6 @@
             100% { transform: translate(-50%, -50%) rotate(360deg); }
           }
           
-          /* 数据流光线 */
           .data-float-lines {
             position: absolute;
             inset: 0;
@@ -324,7 +317,6 @@
             100% { top: 100%; opacity: 0; }
           }
           
-          /* 锁定框架 */
           .lock-frame {
             position: absolute;
             inset: 10px;
@@ -346,9 +338,6 @@
           .lock-bottom { bottom: 0; right: 0; }
           .lock-left { top: 0; left: 0; }
           .lock-right { bottom: 0; right: 0; }
-    /* ====================================== */
-    /* 答题页美化 🔥 不动逻辑 只变好看 */
-    /* ====================================== */
     #page-quiz .q-card {
       background: linear-gradient(180deg, #111 0%, #1a1a1a 100%);
       border: 1px solid rgba(57, 255, 20, 0.5);
@@ -401,12 +390,9 @@
       box-shadow: 0 0 12px #39ff14;
       border-radius: 99px;
     }
-      /* ==============================================
-  🔥 真实界面 · 厚重感 + 浮雕 + 深度 + 立体感
-      ============================================== */
     #page-quiz {
         background: linear-gradient(180deg, #0F0F11, #1A1A1F);
-        background-image: url(https://www.photo.com/image/dark-metal-pattern.jpg);
+        background-image: linear-gradient(180deg, #0F0F11, #1A1A1F);
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -415,7 +401,6 @@
         min-height: 100vh;
     }
 
-    /* 界面卡片 —— 真正厚重、悬浮、浮雕感 */
     #quiz-content {
         background: #18181B;
         border-radius: 22px;
@@ -429,7 +414,6 @@
         overflow: hidden;
     }
 
-    /* 内浮雕 —— 最关键的厚重感 */
     #quiz-content::before {
         content: "";
         position: absolute;
@@ -439,7 +423,6 @@
         pointer-events: none;
     }
 
-    /* 按钮 —— 真正立体、像实物按键 */
     .opt-btn {
         background: linear-gradient(180deg, #222, #2D2D30);
         border: 1px solid rgba(255,255,255,0.08);
@@ -458,7 +441,6 @@
         transform: scale(0.97);
     }
 
-    /* 进度条 —— 真实机器进度条 */
     .progress-container {
         background: #111;
         border-radius: 99px;
@@ -474,7 +456,7 @@
 </head>
 <body>
 
-<audio id="bgm" loop><source src="environment.mp3" type="audio/mpeg"></audio>
+<audio id="bgm" loop ><source src="environment.mp3" type="audio/mpeg"></audio>
 <audio id="clickAudio"><source src="click.mp3" type="audio/mpeg"></audio>
 <audio id="resultAudio"><source src="result.mp3" type="audio/mpeg"></audio>
 <audio id="dangerousAudio" src="dangerous.mp3"></audio>
@@ -482,7 +464,6 @@
 <div class="container">
     <button id="musicBtn" class="opt-btn" style="position:fixed;top:10px;right:10px;width:auto;padding:8px 12px;font-size:12px;z-index:999;" onclick="toggleMusic()">🔊 开启音乐</button>
     
-    <!-- 首页（整合版） -->
     <div id="page-home">
         <div class="bg-neon"></div>
         <div class="floating-word" style="top:10%; left:10%;">摸鱼</div>
@@ -548,12 +529,10 @@
         <p style="font-size:11px; color:#444; margin-top:20px;">微信搜索：灵犀测评局 | 只有牛马懂牛马</p>
     </div>
 
-    <!-- 老板页面 -->
     <div id="page-boss" class="hidden">
         <div class="q-card" id="boss-content"></div>
     </div>
 
-    <!-- 答题页面 -->
     <div id="page-quiz" class="hidden">
         <div class="progress-container"><div id="p-bar" class="progress-bar"></div></div>
         <div id="quiz-content"></div>
@@ -562,7 +541,6 @@
         </div>
     </div>
 
-    <!-- 结果页面 -->
     <div id="page-result" class="hidden">
         <p style="font-size:16px; color:#fff; margin-top:15px;">
             回复 <span style="color:#39ff14; font-weight:bold; font-size:20px;">【不干了】</span><br>
@@ -586,17 +564,30 @@ let currentStep = 0;
 let scores = { W: 0, M: 0, F: 0, S: 0 };
 let historyStack = [];
 
-// 音乐控制
 const bgm = document.getElementById('bgm');
 const musicBtn = document.getElementById('musicBtn');
 let musicOn = false;
+
+document.addEventListener('click', function initMusic() {
+    if (!musicOn) {
+        bgm.play().catch(()=>{});
+        musicOn = true;
+    }
+    document.removeEventListener('click', initMusic);
+});
+
 function toggleMusic() {
     musicOn = !musicOn;
-    if(musicOn) { bgm.play(); musicBtn.textContent = '🔇 关闭音乐'; }
-    else { bgm.pause(); musicBtn.textContent = '🔊 开启音乐'; }
+    if (musicOn) {
+        bgm.muted = false;
+        bgm.play().catch(()=>{});
+        musicBtn.textContent = '🔇 关闭音乐';
+    } else {
+        bgm.pause();
+        musicBtn.textContent = '🔊 开启音乐';
+    }
 }
 
-// 老板逻辑线路
 function toBoss(step) {
     document.body.classList.remove('alert-bg');
     const pageHome = document.getElementById('page-home');
@@ -607,36 +598,11 @@ function toBoss(step) {
     pageBoss.classList.remove('hidden');
 
     const bossSteps = {
-        1: {
-            t: "灵魂拷问 01",
-            q: "你要求员工把公司当作家，那你什么时候把他们当成家人，而不是工具？",
-            a1: "家人也要为家做贡献，不干活算什么家人？",
-            a2: "其实我也很纠结，我只是个夹心层..."
-        },
-        2: {
-            t: "灵魂拷问 02",
-            q: "你说要以结果为导向，那由于你决策失误造成的损失，你会按结果来承担吗？",
-            a1: "我是老板，我承担的是倒闭的风险，这不够吗？",
-            a2: "说得对，这题扎心了，我不是人。"
-        },
-        3: {
-            t: "灵魂拷问 03",
-            q: "你总说“公司不容易”，那我们打工人的生活、健康、家庭，就容易了吗？",
-            a1: "成年人的世界没有容易二字，吃苦是福。",
-            a2: "不容易，我不是人，退回到牛马界面。"
-        },
-        4: {
-            t: "灵魂拷问 04",
-            q: "你说“先做事、后谈钱”，那为什么你永远先拿钱，再跟我们谈做事？",
-            a1: "没有我的资本运作，他们连加班的机会都没有。",
-            a2: "别骂了别骂了，我知道错了。"
-        },
-        5: {
-            t: "终极拷问",
-            q: "你希望我们把工作当事业，那你什么时候把我们当合伙人，而不是打工人？",
-            a1: "等公司上市了，自然会给你们画更大的饼。",
-            a2: "我悔改，我骨子里也是个好人。"
-        }
+        1: { t: "灵魂拷问 01", q: "你要求员工把公司当作家，那你什么时候把他们当成家人，而不是工具？", a1: "家人也要为家做贡献，不干活算什么家人？", a2: "其实我也很纠结，我只是个夹心层..." },
+        2: { t: "灵魂拷问 02", q: "你说要以结果为导向，那由于你决策失误造成的损失，你会按结果来承担吗？", a1: "我是老板，我承担的是倒闭的风险，这不够吗？", a2: "说得对，这题扎心了，我不是人。" },
+        3: { t: "灵魂拷问 03", q: "你总说“公司不容易”，那我们打工人的生活、健康、家庭，就容易了吗？", a1: "成年人的世界没有容易二字，吃苦是福。", a2: "不容易，我不是人，退回到牛马界面。" },
+        4: { t: "灵魂拷问 04", q: "你说“先做事、后谈钱”，那为什么你永远先拿钱，再跟我们谈做事？", a1: "没有我的资本运作，他们连加班的机会都没有。", a2: "别骂了别骂了，我知道错了。" },
+        5: { t: "终极拷问", q: "你希望我们把工作当事业，那你什么时候把我们当合伙人，而不是打工人？", a1: "等公司上市了，自然会给你们画更大的饼。", a2: "我悔改，我骨子里也是个好人。" }
     };
 
     if (step <= 5) {
@@ -648,11 +614,9 @@ function toBoss(step) {
             <button class="opt-btn" style="color:#888" onclick="startQuiz()">【认怂】${data.a2}</button>
         `;
     } else {
-         // ========= 插入开始 =========
         dangerousAudio.pause();
         dangerousAudio.currentTime = 0;
         dangerousAudio.play();
-        // ========= 插入结束 =========
         document.body.classList.add('alert-bg');
         content.innerHTML = `
             <h1 style="font-size:60px; margin:0;">🚫</h1>
@@ -668,7 +632,6 @@ function toBoss(step) {
     }
 }
 
-// 题目数组（完整保留）
 const questions = [
     { q: "周一睁眼的第一反应是？", options: [{ t: "立刻清醒，准备开启打工的一天", w: { W: 15 } },{ t: "再睡五分钟，反正去了也摸鱼", w: { M: 15 } },{ t: "想把闹钟、手机、公司一起砸了", w: { F: 20 } },{ t: "面无表情，痛苦也得忍耐", w: { S: 10 } }]},
     { q: "老板在群里发了一个‘？’，你会？", options: [{ t: "心跳加速，疯狂检查自己有没有犯错", w: { W: 15, S: 5 } },{ t: "假装没看见，继续刷短视频", w: { M: 20 } },{ t: "直接回一个问号，主打一个对抗", w: { F: 20 } },{ t: "淡定观望，反正跟我没关系", w: { S: 15 } }]},
@@ -692,7 +655,6 @@ const questions = [
     { q: "对2026年职场中的自己说一句话？", options: [{ t: "继续加油，早日升职加薪", w: { W: 15 } },{ t: "好好摸鱼，平安混到退休", w: { M: 15 } },{ t: "再不开心就辞职，别委屈", w: { F: 20 } },{ t: "保持心态，平安健康最重要", w: { S: 15 } }]}
 ];
 
-// 开始答题
 function startQuiz() {
     document.body.classList.remove('alert-bg');
     document.getElementById('page-home').classList.add('hidden');
@@ -704,7 +666,6 @@ function startQuiz() {
     renderNext();
 }
 
-// 渲染下一题
 function renderNext() {
     if (currentStep >= questions.length) { showResult(); return; }
     const progress = (currentStep / questions.length) * 100;
@@ -718,7 +679,6 @@ function renderNext() {
     document.getElementById('quiz-content').innerHTML = html;
 }
 
-// 选择答案
 function handleChoice(i) {
     document.getElementById('clickAudio').play().catch(()=>{});
     historyStack.push({step: currentStep, score: {...scores}});
@@ -728,7 +688,6 @@ function handleChoice(i) {
     renderNext();
 }
 
-// 返回上一题
 function goPrev() {
     if (historyStack.length === 0) return;
     const last = historyStack.pop();
@@ -737,7 +696,6 @@ function goPrev() {
     renderNext();
 }
 
-// 结果映射（完整保留）
 const map = {
     WW:{title:"纯种究极社畜",desc:"血液里流淌KPI，灵魂焊死在工位。",advice:["强制下班断电，杜绝自我感动式加班。","减少精神内耗，公司没你并不会倒闭。","每月摸鱼一次，激活快要枯死的灵魂。"]},
     WM:{title:"精致利己打工仔",desc:"表面努力干活，实则精准摸鱼。",advice:["继续保持摸鱼技巧，别被老板抓现行。","适当降低表演欲，活得更轻松一点。","工资到位再干活，别当免费劳模。"]},
@@ -757,7 +715,6 @@ const map = {
     SS:{title:"人间清醒佛陀",desc:"慈悲看戏，从不生气，职场活神仙。",advice:["继续修行，你已经基本成佛。","偶尔入世，别完全脱离人群。","守护好心情，比什么都珍贵。"]}
 };
 
-// 加载图片辅助函数
 function loadImage(src) {
     return new Promise((resolve) => {
         const img = new Image();
@@ -768,7 +725,6 @@ function loadImage(src) {
     });
 }
 
-// 显示结果
 async function showResult() {
     document.getElementById('resultAudio').play().catch(()=>{});
     document.getElementById('page-quiz').classList.add('hidden');
@@ -782,7 +738,6 @@ async function showResult() {
     document.getElementById('loading-text').innerText = "诊断完成！";
 }
 
-// 生成结果图片
 async function generateFinalImage(title, desc, adv) {
     const canvas = document.getElementById('resCanvas');
     const ctx = canvas.getContext('2d');
@@ -791,14 +746,12 @@ async function generateFinalImage(title, desc, adv) {
     canvas.height = 700 * s; 
     ctx.scale(s, s);
 
-    // 1. 背景
     ctx.fillStyle = "#f4f1ea";
     ctx.fillRect(0, 0, 400, 700);
     ctx.strokeStyle = "#8b7e66";
     ctx.lineWidth = 1;
     ctx.strokeRect(10, 10, 380, 680);
 
-    // 2. 头部
     ctx.fillStyle = "#333";
     ctx.textAlign = "center";
     ctx.font = "bold 20px Arial";
@@ -806,19 +759,16 @@ async function generateFinalImage(title, desc, adv) {
     ctx.font = "12px Arial";
     ctx.fillText("NO. " + Math.random().toString().slice(2, 10), 200, 85);
 
-    // 3. 结果标题
     ctx.fillStyle = "#d32f2f"; 
     ctx.font = "bold 32px sans-serif";
     ctx.fillText(title, 200, 160);
 
-    // 4. 临床表现
     ctx.fillStyle = "#555";
     ctx.font = "bold 15px sans-serif";
     ctx.fillText("【 临床表现 】", 200, 210);
     ctx.font = "14px sans-serif";
     ctx.fillText(desc, 200, 240);
 
-    // 5. 医生建议
     ctx.textAlign = "left";
     ctx.fillStyle = "#333";
     ctx.font = "bold 15px sans-serif";
@@ -828,13 +778,11 @@ async function generateFinalImage(title, desc, adv) {
         ctx.fillText("· " + text, 40, 345 + (i * 28));
     });
 
-    // 6. 加载并绘制素材
     const [qrImg, sealImg] = await Promise.all([
         loadImage('qrcode.jpg'),
         loadImage('lx.png')
     ]);
 
-    // 绘制二维码
     if (qrImg) {
         ctx.drawImage(qrImg, 150, 460, 100, 100);
     } else {
@@ -846,7 +794,6 @@ async function generateFinalImage(title, desc, adv) {
         ctx.fillText("此处为二维码", 200, 515);
     }
 
-    // 绘制印章 (如果不成功则绘制模拟红印)
     if (sealImg) {
         ctx.drawImage(sealImg, 270, 460, 90, 90);
     } else {
@@ -855,15 +802,10 @@ async function generateFinalImage(title, desc, adv) {
         ctx.rotate(-0.2);
         ctx.strokeStyle = "rgba(211,47,47,0.7)";
         ctx.lineWidth = 3;
-        ctx.strokeRect(-35, -35, 70, 70);
-        ctx.fillStyle = "rgba(211,47,47,0.7)";
-        ctx.font = "bold 16px serif";
-        ctx.textAlign = "center";
-        ctx.fillText("灵犀鉴定", 0, 8);
+        ctx.stroke();
         ctx.restore();
     }
 
-    // 7. 底部装饰
     ctx.textAlign = "center";
     ctx.fillStyle = "#d32f2f";
     ctx.font = "bold 16px sans-serif";
@@ -876,9 +818,7 @@ async function generateFinalImage(title, desc, adv) {
     ctx.font = "10px Arial";
     ctx.fillText("© 2026 灵犀测评局", 200, 675);
 
-    // 8. 转换输出
-    const img = document.getElementById('share-img');
-    img.src = canvas.toDataURL("image/png");
+    document.getElementById('share-img').src = canvas.toDataURL("image/png");
 }
 </script>
 </body>
